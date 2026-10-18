@@ -3,27 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>O.M.P - Ordre Mondial de la Purge</title>
+    <title>O.M.P - Générateur d'Avis</title>
+    <!-- Bibliothèque pour télécharger l'image -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- Polices Google Fonts pour le style -->
+    <link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Pirata+One&family=Special+Elite&display=swap" rel="stylesheet">
+    
     <style>
         /* --- STYLE GLOBAL --- */
         body {
             margin: 0;
             padding: 0;
-            background-color: #1a1a1a;
-            font-family: 'Times New Roman', serif;
+            background-color: #0d0d0d;
+            background-image: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%);
+            font-family: 'Special+Elite', serif;
             color: #fff;
             display: flex;
             flex-direction: column;
             align-items: center;
-            overflow-x: hidden;
+            min-height: 100vh;
         }
 
-        /* --- L'ACCUEIL (ÉCRAN DE DÉMARRAGE) --- */
+        /* --- L'ACCUEIL (OMP) --- */
         #welcome-screen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, #2a0000 0%, #000000 100%);
+            background: #000;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 9999;
@@ -32,11 +39,12 @@
         }
 
         #welcome-screen h1 {
-            font-size: 8rem;
-            color: #b30000;
-            text-shadow: 0 0 20px #ff0000, 0 0 40px #ff0000;
-            letter-spacing: 20px;
+            font-family: 'Pirata One', cursive;
+            font-size: 10rem;
+            color: #8a0b0b;
+            text-shadow: 0 0 30px #ff0000, 0 0 60px #ff0000;
             margin: 0;
+            letter-spacing: 15px;
             animation: pulse 2s infinite;
         }
 
@@ -47,11 +55,11 @@
         }
 
         .click-hint {
-            position: absolute;
-            bottom: 50px;
-            font-size: 1.2rem;
-            color: #888;
+            margin-top: 50px;
+            font-size: 1.5rem;
+            color: #555;
             animation: blink 1.5s infinite;
+            letter-spacing: 2px;
         }
 
         @keyframes blink {
@@ -59,135 +67,255 @@
             50% { opacity: 0; }
         }
 
-        /* --- LE GENERATEUR D'AFFICHE --- */
+        /* --- LE GENERATEUR --- */
         #app-container {
-            display: none; /* Caché jusqu'au clic */
+            display: none;
             flex-direction: column;
             align-items: center;
-            padding: 40px 20px;
+            padding: 20px;
             width: 100%;
-            max-width: 600px;
+            max-width: 800px;
+            box-sizing: border-box;
+        }
+
+        /* Formulaire */
+        .panel {
+            background: rgba(20, 20, 20, 0.9);
+            border: 2px solid #8a0b0b;
+            padding: 25px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 450px;
+            margin-bottom: 30px;
+            box-shadow: 0 0 20px rgba(138, 11, 11, 0.3);
+        }
+
+        .panel h2 {
+            text-align: center;
+            color: #d4af37;
+            margin-top: 0;
+            font-family: 'Pirata One', cursive;
+            font-size: 2.5rem;
+            letter-spacing: 2px;
         }
 
         .form-group {
-            width: 100%;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 5px;
-            color: #d4af37; /* Couleur or */
-            font-weight: bold;
-            letter-spacing: 1px;
+            margin-bottom: 8px;
+            color: #ccc;
+            font-size: 1.1rem;
         }
 
-        .form-group input {
+        .form-group input[type="text"],
+        .form-group input[type="number"] {
             width: 100%;
-            padding: 10px;
-            background-color: #222;
-            border: 2px solid #555;
+            padding: 12px;
+            background-color: #111;
+            border: 1px solid #444;
             color: #fff;
-            font-size: 1rem;
+            font-size: 1.1rem;
             border-radius: 5px;
+            box-sizing: border-box;
+            font-family: 'Special+Elite', serif;
         }
 
         .form-group input:focus {
             outline: none;
-            border-color: #b30000;
+            border-color: #8a0b0b;
+            box-shadow: 0 0 10px rgba(138, 11, 11, 0.5);
         }
 
-        /* --- L'AFFICHE (LE RENDU) --- */
-        #poster {
+        /* Bouton Upload personnalisé */
+        .file-upload-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-upload-btn {
+            border: 1px dashed #d4af37;
+            color: #d4af37;
+            background-color: transparent;
+            padding: 15px;
+            border-radius: 5px;
+            width: 100%;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-sizing: border-box;
+        }
+
+        .file-upload-btn:hover {
+            background-color: rgba(212, 175, 55, 0.1);
+        }
+
+        .file-upload-wrapper input[type="file"] {
+            position: absolute;
+            left: 0; top: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer;
+        }
+
+        /* Bouton Générer */
+        #generate-btn {
+            width: 100%;
+            padding: 15px;
+            background-color: #8a0b0b;
+            color: #fff;
+            border: none;
+            font-size: 1.3rem;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: background 0.3s;
+            font-family: 'Special+Elite', serif;
+            letter-spacing: 2px;
+        }
+
+        #generate-btn:hover {
+            background-color: #b30000;
+        }
+
+        /* --- L'AFFICHE --- */
+        #poster-container {
             position: relative;
             width: 100%;
             max-width: 500px;
             aspect-ratio: 2 / 3;
-            background-image: url('https://i.imgur.com/your-paper-background.jpg'); /* REMPLACE PAR TON IMAGE DE FOND */
-            background-color: #e6d5b8; /* Fallback couleur papier */
-            background-size: cover;
-            border: 10px solid #3e2723;
-            box-shadow: 0 0 30px rgba(0,0,0,0.8);
-            margin-top: 30px;
+            /* Texture de vieux papier générée en CSS */
+            background-color: #e3d1b3;
+            background-image: url('https://www.transparenttextures.com/patterns/aged-paper.png');
+            border: 12px solid #2a1a14; /* Bordure bois foncé */
+            box-shadow: 0 15px 35px rgba(0,0,0,0.8), inset 0 0 50px rgba(0,0,0,0.5);
+            box-sizing: border-box;
+            padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            color: #000;
-            padding: 20px;
-            box-sizing: border-box;
+            overflow: hidden;
+            margin-bottom: 30px;
+            /* Effet de déchirure sur les bords */
+            clip-path: polygon(
+                2% 0%, 98% 1%, 100% 3%, 99% 97%, 97% 100%, 3% 99%, 0% 95%, 1% 5%
+            );
         }
 
         /* Titre WANTED */
-        .poster-title {
-            font-family: 'Impact', sans-serif;
-            font-size: 4rem;
+        .title-wanted {
+            font-family: 'Alfa Slab One', cursive;
+            font-size: 4.5rem;
             color: #1a1a1a;
-            margin: 10px 0;
-            letter-spacing: 5px;
-            text-shadow: 2px 2px 0px #fff;
+            margin: 0;
+            line-height: 1;
+            letter-spacing: 3px;
+            text-shadow: 2px 2px 0px #fff, 4px 4px 5px rgba(0,0,0,0.3);
         }
 
-        .poster-subtitle {
-            font-size: 1.5rem;
-            color: #5a0000;
-            font-weight: bold;
-            margin-bottom: 15px;
+        /* Sous-titre BAN OR SPAM */
+        .title-sub {
+            font-family: 'Alfa Slab One', cursive;
+            font-size: 1.4rem;
+            color: #6b0505;
+            margin: 10px 0 15px 0;
             letter-spacing: 2px;
-        }
-
-        /* La photo */
-        #poster-photo {
+            border-top: 2px solid #1a1a1a;
+            border-bottom: 2px solid #1a1a1a;
+            padding: 5px 15px;
             width: 80%;
-            height: 300px;
-            object-fit: cover;
-            border: 5px solid #1a1a1a;
-            background-color: #333;
-            margin-bottom: 15px;
+            text-align: center;
         }
 
-        /* Le nom */
-        #poster-name {
-            font-family: 'Georgia', serif;
-            font-size: 2rem;
-            font-weight: bold;
+        /* Conteneur Photo */
+        .photo-frame {
+            width: 85%;
+            height: 42%;
+            background-color: #111;
+            border: 6px solid #1a1a1a;
+            margin-bottom: 15px;
+            box-shadow: inset 0 0 20px #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        #poster-photo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none; /* Caché tant qu'il n'y a pas d'image */
+        }
+
+        .photo-placeholder {
+            color: #444;
+            font-size: 1.2rem;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Nom */
+        .poster-name {
+            font-family: 'Alfa Slab One', cursive;
+            font-size: 1.8rem;
             color: #1a1a1a;
             text-transform: uppercase;
-            margin-bottom: 10px;
             text-align: center;
+            margin: 0 0 10px 0;
+            width: 90%;
+            line-height: 1.1;
+            word-wrap: break-word;
         }
 
-        /* La prime */
-        .prime-section {
-            font-size: 1.8rem;
-            color: #5a0000;
-            font-weight: bold;
-            margin-bottom: 10px;
+        /* Prime */
+        .poster-prime {
+            font-family: 'Alfa Slab One', cursive;
+            font-size: 2rem;
+            color: #6b0505;
+            margin-bottom: 15px;
         }
 
-        /* Le texte OMP */
+        /* Footer OMP */
         .omp-footer {
             text-align: center;
-            font-size: 1rem;
-            color: #1a1a1a;
+            width: 100%;
+            margin-top: auto;
             border-top: 2px solid #1a1a1a;
             padding-top: 10px;
-            width: 90%;
-            margin-top: auto;
         }
-        
-        .omp-footer strong {
-            font-size: 1.2rem;
-            display: block;
+
+        .omp-title {
+            font-family: 'Alfa Slab One', cursive;
+            font-size: 1.3rem;
+            color: #1a1a1a;
             margin-bottom: 5px;
         }
 
-        /* Bouton de téléchargement */
+        .omp-text {
+            font-family: 'Special+Elite', serif;
+            font-size: 0.85rem;
+            color: #1a1a1a;
+            line-height: 1.2;
+            margin: 0;
+        }
+
+        .omp-warning {
+            font-family: 'Alfa Slab One', cursive;
+            font-size: 1rem;
+            color: #6b0505;
+            margin-top: 8px;
+            text-transform: uppercase;
+        }
+
+        /* Bouton Télécharger */
         #download-btn {
             display: none;
-            margin-top: 20px;
-            padding: 15px 30px;
-            background-color: #b30000;
-            color: #fff;
+            padding: 15px 40px;
+            background-color: #d4af37;
+            color: #1a1a1a;
             border: none;
             font-size: 1.2rem;
             cursor: pointer;
@@ -195,16 +323,22 @@
             font-weight: bold;
             text-transform: uppercase;
             transition: background 0.3s;
+            font-family: 'Special+Elite', serif;
+            margin-bottom: 50px;
         }
 
         #download-btn:hover {
-            background-color: #ff0000;
+            background-color: #fce17e;
         }
+
+        /* Musique */
+        #bg-music { display: none; }
+
     </style>
 </head>
 <body>
 
-    <!-- ÉCRAN D'ACCUEIL (MUSIQUE + OMP) -->
+    <!-- ÉCRAN D'ACCUEIL -->
     <div id="welcome-screen">
         <h1>OMP</h1>
         <div class="click-hint">Cliquez pour entrer</div>
@@ -212,57 +346,65 @@
 
     <!-- L'APPLICATION -->
     <div id="app-container">
-        <h2 style="color: #d4af37; text-align: center; letter-spacing: 2px;">GÉNÉRATEUR D'AVIS DE RECHERCHE</h2>
         
-        <div class="form-group">
-            <label>Nom du criminel :</label>
-            <input type="text" id="input-name" placeholder="Ex: MUICHIRO ALASTOR ZR" value="MUICHIRO ALASTOR ZR">
-        </div>
+        <!-- Formulaire de personnalisation -->
+        <div class="panel">
+            <h2>Créer une Prime</h2>
+            
+            <div class="form-group">
+                <label>Nom du criminel :</label>
+                <input type="text" id="input-name" placeholder="Ex: MUICHIRO ALASTOR ZR" value="MUICHIRO ALASTOR ZR">
+            </div>
 
-        <div class="form-group">
-            <label>Lien de la photo (URL) :</label>
-            <input type="url" id="input-photo" placeholder="https://exemple.com/image.jpg" value="https://i.pinimg.com/736x/8a/0e/3f/8a0e3f6b1a2c3d4e5f6g7h8i9j0k1l2.jpg">
-            <small style="color: #888;">(Pour le moment, collez un lien d'image. Plus tard, on pourra ajouter l'upload direct)</small>
-        </div>
+            <div class="form-group">
+                <label>Photo du criminel :</label>
+                <div class="file-upload-wrapper">
+                    <div class="file-upload-btn" id="file-label">📸 Choisir une image...</div>
+                    <input type="file" id="input-photo" accept="image/*">
+                </div>
+            </div>
 
-        <div class="form-group">
-            <label>Montant de la prime (en Berry) :</label>
-            <input type="number" id="input-prime" placeholder="Ex: 1500" value="1500">
-        </div>
+            <div class="form-group">
+                <label>Montant de la prime (en Berry) :</label>
+                <input type="number" id="input-prime" placeholder="Ex: 1500" value="1500">
+            </div>
 
-        <button id="generate-btn" style="padding: 15px 30px; background-color: #d4af37; color: #000; border: none; font-size: 1.2rem; cursor: pointer; font-weight: bold; border-radius: 5px; margin-top: 10px;">GÉNÉRER L'AFFICHE</button>
+            <button id="generate-btn">Générer l'Affiche</button>
+        </div>
 
         <!-- L'AFFICHE GENERÉE -->
-        <div id="poster">
-            <div class="poster-title">WANTED</div>
-            <div class="poster-subtitle">BAN OR SPAM</div>
+        <div id="poster-container">
+            <div class="title-wanted">WANTED</div>
+            <div class="title-sub">BAN OR SPAM</div>
             
-            <img id="poster-photo" src="" alt="Photo">
+            <div class="photo-frame">
+                <img id="poster-photo" src="" alt="Photo">
+                <div class="photo-placeholder" id="photo-placeholder">Aucune image<br>sélectionnée</div>
+            </div>
             
-            <div id="poster-name">NOM DU CRIMINEL</div>
+            <div class="poster-name" id="poster-name">MUICHIRO ALASTOR ZR</div>
             
-            <div class="prime-section">PRIME : <span id="poster-prime">0</span></div>
+            <div class="poster-prime">PRIME : <span id="poster-prime-val">1 500</span></div>
             
             <div class="omp-footer">
-                <strong>O.M.P - ORDRE MONDIAL DE LA PURGE</strong>
-                Cette prime a été attribuée par l'O.M.P.<br>
-                Toute modification ou falsification de cette dernière<br>
-                sera sévèrement punie.<br>
-                <strong style="margin-top: 10px;">LA PURGE NE PARDONNE PAS.</strong>
+                <div class="omp-title">O.M.P - ORDRE MONDIAL DE LA PURGE</div>
+                <p class="omp-text">
+                    Cette prime a été attribuée par l'O.M.P.<br>
+                    Toute modification ou falsification de cette dernière<br>
+                    sera sévèrement punie.
+                </p>
+                <div class="omp-warning">LA PURGE NE PARDONNE PAS.</div>
             </div>
         </div>
 
-        <button id="download-btn">Télécharger l'affiche</button>
+        <button id="download-btn">Télécharger l'Affiche</button>
     </div>
 
-    <!-- LA MUSIQUE (Remplace par un vrai lien mp3) -->
+    <!-- LA MUSIQUE (Remplace le lien par ta musique sombre/epic) -->
     <audio id="bg-music" loop>
-        <!-- J'ai mis un lien d'exemple, tu devras héberger ton propre son -->
-        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
-        Ton navigateur ne supporte pas l'audio.
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- SCRIPT POUR FAIRE FONCTIONNER LE TOUT -->
     <script>
         // 1. GESTION DE L'ACCUEIL ET DE LA MUSIQUE
         const welcomeScreen = document.getElementById('welcome-screen');
@@ -270,11 +412,11 @@
         const music = document.getElementById('bg-music');
 
         welcomeScreen.addEventListener('click', () => {
-            // Lance la musique (les navigateurs exigent une interaction utilisateur)
-            music.volume = 0.4; // Volume à 40%
+            // Lance la musique
+            music.volume = 0.3;
             music.play().catch(e => console.log("Erreur audio: ", e));
             
-            // Cache l'écran d'accueil
+            // Transition
             welcomeScreen.style.opacity = '0';
             setTimeout(() => {
                 welcomeScreen.style.display = 'none';
@@ -282,43 +424,80 @@
             }, 1000);
         });
 
-        // 2. GESTION DU GÉNÉRATEUR
+        // 2. GESTION DE L'UPLOAD D'IMAGE
+        const fileInput = document.getElementById('input-photo');
+        const fileLabel = document.getElementById('file-label');
+        const posterPhoto = document.getElementById('poster-photo');
+        const photoPlaceholder = document.getElementById('photo-placeholder');
+        let uploadedImageSrc = "";
+
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                fileLabel.textContent = "✅ Image sélectionnée";
+                fileLabel.style.color = "#4caf50";
+                fileLabel.style.borderColor = "#4caf50";
+
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    uploadedImageSrc = event.target.result;
+                    posterPhoto.src = uploadedImageSrc;
+                    posterPhoto.style.display = 'block';
+                    photoPlaceholder.style.display = 'none';
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // 3. GESTION DU GENERATEUR
         const genBtn = document.getElementById('generate-btn');
         const posterName = document.getElementById('poster-name');
-        const posterPhoto = document.getElementById('poster-photo');
-        const posterPrime = document.getElementById('poster-prime');
+        const posterPrimeVal = document.getElementById('poster-prime-val');
 
         genBtn.addEventListener('click', () => {
             const nameValue = document.getElementById('input-name').value;
-            const photoValue = document.getElementById('input-photo').value;
             const primeValue = document.getElementById('input-prime').value;
 
-            // Mise à jour de l'affiche
+            // Mise à jour
             posterName.textContent = nameValue || "NOM INCONNU";
-            posterPhoto.src = photoValue;
-            // Formate le nombre avec des espaces (ex: 1 500)
-            posterPrime.textContent = Number(primeValue).toLocaleString('fr-FR') || "0";
+            posterPrimeVal.textContent = Number(primeValue).toLocaleString('fr-FR') || "0";
+            
+            // Petit effet de flash pour montrer que ça a généré
+            const poster = document.getElementById('poster-container');
+            poster.style.boxShadow = "0 0 50px rgba(255, 0, 0, 0.8)";
+            setTimeout(() => {
+                poster.style.boxShadow = "0 15px 35px rgba(0,0,0,0.8), inset 0 0 50px rgba(0,0,0,0.5)";
+            }, 300);
         });
 
-        // 3. BOUTON DE TELECHARGEMENT (Nécessite html2canvas pour marcher parfaitement)
-        // Pour l'instant, ce bouton n'est pas fonctionnel sans la librairie externe.
-        // Si tu veux le téléchargement, ajoute ça dans le <head>:
-        // <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-        
+        // 4. TELECHARGEMENT
         const downloadBtn = document.getElementById('download-btn');
-        downloadBtn.style.display = 'block'; // Affiche le bouton
+        downloadBtn.style.display = 'block';
 
         downloadBtn.addEventListener('click', () => {
-            // Code basique pour télécharger (nécessite html2canvas)
             if (typeof html2canvas !== 'undefined') {
-                html2canvas(document.getElementById('poster')).then(canvas => {
+                // On cache temporairement le bouton pour ne pas qu'il soit sur l'image téléchargée
+                downloadBtn.style.display = 'none';
+                
+                html2canvas(document.getElementById('poster-container'), {
+                    scale: 2, // Meilleure qualité
+                    useCORS: true,
+                    backgroundColor: null
+                }).then(canvas => {
                     const link = document.createElement('a');
-                    link.download = 'avis_de_recherche.png';
-                    link.href = canvas.toDataURL();
+                    link.download = 'OMP_Avis_Recherche.png';
+                    link.href = canvas.toDataURL('image/png');
                     link.click();
+                    
+                    // On réaffiche le bouton
+                    downloadBtn.style.display = 'block';
+                }).catch(err => {
+                    console.error("Erreur de génération", err);
+                    downloadBtn.style.display = 'block';
+                    alert("Erreur lors du téléchargement.");
                 });
             } else {
-                alert("La fonction de téléchargement nécessite la librairie html2canvas. (L'image reste visible à l'écran).");
+                alert("La librairie de téléchargement n'est pas chargée.");
             }
         });
     </script>
