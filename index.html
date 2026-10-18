@@ -3,19 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>O.M.P - Générateur de Prime</title>
-    <!-- Librairie pour télécharger l'image -->
+    <title>Ordre Mondial de la Purge - Générateur</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <!-- Polices -->
     <link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Pirata+One&family=Special+Elite&display=swap" rel="stylesheet">
     
     <style>
-        /* --- BASE ET AMBIANCE SOMBRE --- */
+        /* --- AMBIANCE DU SITE --- */
         body {
             margin: 0;
             padding: 0;
-            background-color: #050505;
-            background-image: radial-gradient(circle at center, #1a0000 0%, #000000 100%);
+            background-color: #050000;
+            background-image: radial-gradient(circle at 50% 0%, #2a0000 0%, #000000 80%);
             font-family: 'Special Elite', serif;
             color: #fff;
             display: flex;
@@ -25,18 +23,7 @@
             overflow-x: hidden;
         }
 
-        /* --- EFFET DE SANG/BRUME EN FOND (Optionnel, purement esthétique) --- */
-        body::before {
-            content: "";
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: url('https://www.transparenttextures.com/patterns/dark-matter.png');
-            opacity: 0.3;
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        /* --- ÉCRAN D'ACCUEIL --- */
+        /* --- ECRAN D'ACCUEIL --- */
         #welcome-screen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -47,37 +34,33 @@
             align-items: center;
             z-index: 9999;
             cursor: pointer;
-            transition: opacity 1s ease, visibility 1s;
+            transition: opacity 0.8s ease;
         }
 
         #welcome-screen h1 {
             font-family: 'Pirata One', cursive;
-            font-size: 12rem;
+            font-size: 9rem;
             color: #cc0000;
-            text-shadow: 0 0 20px #ff0000, 0 0 50px #ff0000, 0 0 100px #8a0000;
+            text-shadow: 0 0 20px #ff0000, 0 0 50px #ff0000;
             margin: 0;
-            letter-spacing: 20px;
-            animation: pulseGlow 2s infinite alternate;
+            letter-spacing: 15px;
+            animation: pulse 2s infinite alternate;
         }
 
-        @keyframes pulseGlow {
-            0% { transform: scale(1); text-shadow: 0 0 20px #ff0000, 0 0 50px #ff0000; }
-            100% { transform: scale(1.05); text-shadow: 0 0 30px #ff0000, 0 0 80px #ff0000, 0 0 120px #ff0000; }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(1.05); opacity: 1; text-shadow: 0 0 40px #ff0000, 0 0 80px #ff0000; }
         }
 
         .click-hint {
-            margin-top: 40px;
+            margin-top: 50px;
             font-size: 1.2rem;
-            color: #aaa;
+            color: #888;
             animation: blink 1.5s infinite;
-            letter-spacing: 5px;
-            text-transform: uppercase;
+            letter-spacing: 4px;
         }
 
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
-        }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
         /* --- CONTENEUR PRINCIPAL --- */
         #app-container {
@@ -86,7 +69,7 @@
             align-items: center;
             padding: 20px;
             width: 100%;
-            max-width: 1000px;
+            max-width: 800px;
             box-sizing: border-box;
             opacity: 0;
             transition: opacity 1s ease;
@@ -94,17 +77,15 @@
 
         /* --- PANNEAU DE CONFIGURATION --- */
         .panel {
-            background: rgba(10, 10, 10, 0.95);
+            background: rgba(15, 15, 15, 0.95);
             border: 1px solid #333;
-            border-top: 3px solid #8a0b0b;
-            padding: 30px;
-            border-radius: 8px;
+            border-left: 4px solid #8a0b0b;
+            padding: 25px;
+            border-radius: 5px;
             width: 100%;
-            max-width: 450px;
+            max-width: 400px;
             margin-bottom: 40px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8), 0 0 20px rgba(138, 11, 11, 0.2);
-            position: relative;
-            z-index: 10;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.9);
         }
 
         .panel h2 {
@@ -112,141 +93,125 @@
             color: #d4af37;
             margin-top: 0;
             font-family: 'Pirata One', cursive;
-            font-size: 2.5rem;
-            letter-spacing: 2px;
-            text-shadow: 2px 2px 4px #000;
+            font-size: 2.2rem;
+            letter-spacing: 1px;
         }
 
-        .form-group { margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
 
         .form-group label {
             display: block;
-            margin-bottom: 8px;
-            color: #bbb;
-            font-size: 1rem;
+            margin-bottom: 5px;
+            color: #aaa;
+            font-size: 0.9rem;
         }
 
         .form-group input[type="text"],
         .form-group input[type="number"] {
             width: 100%;
-            padding: 15px;
+            padding: 12px;
             background-color: #000;
             border: 1px solid #444;
             color: #fff;
-            font-size: 1.1rem;
-            border-radius: 4px;
+            font-size: 1rem;
             box-sizing: border-box;
             font-family: 'Special Elite', serif;
-            transition: border 0.3s, box-shadow 0.3s;
         }
 
-        .form-group input:focus {
-            outline: none;
-            border-color: #cc0000;
-            box-shadow: 0 0 10px rgba(204, 0, 0, 0.5);
-        }
+        .form-group input:focus { outline: none; border-color: #cc0000; }
 
-        /* Bouton Upload */
-        .file-upload-wrapper { position: relative; overflow: hidden; display: inline-block; width: 100%; }
+        .file-upload-wrapper { position: relative; overflow: hidden; width: 100%; }
         .file-upload-btn {
-            border: 2px dashed #555;
-            color: #aaa;
+            border: 1px dashed #666;
+            color: #ccc;
             background-color: #000;
-            padding: 15px;
-            border-radius: 4px;
-            width: 100%;
+            padding: 12px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.3s;
-            box-sizing: border-box;
-            font-family: 'Special Elite', serif;
+            transition: 0.3s;
         }
         .file-upload-btn:hover { border-color: #d4af37; color: #d4af37; }
         .file-upload-wrapper input[type="file"] {
             position: absolute; left: 0; top: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer;
         }
 
-        /* Bouton Générer */
         #generate-btn {
             width: 100%;
-            padding: 18px;
-            background: linear-gradient(45deg, #5a0000, #b30000);
+            padding: 15px;
+            background: linear-gradient(to right, #5a0000, #b30000);
             color: #fff;
             border: none;
-            font-size: 1.3rem;
+            font-size: 1.1rem;
             cursor: pointer;
-            border-radius: 4px;
-            font-weight: bold;
-            text-transform: uppercase;
-            transition: transform 0.2s, box-shadow 0.2s;
             font-family: 'Special Elite', serif;
+            text-transform: uppercase;
             letter-spacing: 2px;
-            box-shadow: 0 4px 15px rgba(179, 0, 0, 0.4);
+            margin-top: 10px;
+            transition: 0.3s;
         }
-        #generate-btn:hover {
-            transform: scale(1.02);
-            box-shadow: 0 4px 25px rgba(179, 0, 0, 0.8);
-        }
+        #generate-btn:hover { background: linear-gradient(to right, #b30000, #ff0000); }
 
-        /* --- L'AFFICHE (Le rendu final) --- */
-        /* On utilise un ratio fixe pour que l'image rentre toujours */
+        /* --- L'AFFICHE (LE DESIGN FINAL) --- */
         #poster-container {
             position: relative;
             width: 100%;
-            max-width: 480px;
-            aspect-ratio: 2 / 3; /* Ratio Affiche */
-            background-color: #e5d3b3;
+            max-width: 450px;
+            aspect-ratio: 2 / 3; /* Format portrait strict */
+            background-color: #e8d5b5; /* Couleur parchemin */
             background-image: url('https://www.transparenttextures.com/patterns/aged-paper.png');
-            border: 15px solid #1a100c;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.9), inset 0 0 80px rgba(0,0,0,0.6);
+            border: 12px solid #1a100c; /* Bordure noire/bois */
+            box-shadow: 0 20px 50px rgba(0,0,0,1), inset 0 0 60px rgba(0,0,0,0.5);
             box-sizing: border-box;
-            padding: 5% 5% 2% 5%; /* Padding en % pour s'adapter à la taille */
+            padding: 4% 5%; /* Espacement interne */
             display: flex;
             flex-direction: column;
             align-items: center;
             margin-bottom: 30px;
-            /* Effet bords déchirés */
-            clip-path: polygon(1% 0%, 99% 1%, 100% 5%, 99% 98%, 97% 100%, 2% 99%, 0% 95%, 1% 2%);
+            /* Bords irréguliers */
+            clip-path: polygon(1% 0%, 99% 1%, 100% 4%, 99% 98%, 97% 100%, 2% 99%, 0% 96%, 1% 2%);
         }
 
         /* Titre WANTED */
         .title-wanted {
             font-family: 'Alfa Slab One', cursive;
-            font-size: 12vw; /* Taille relative à l'écran */
-            max-font-size: 4.5rem;
+            font-size: 11vw;
+            max-font-size: 3.8rem; /* Ne débordera plus */
             color: #111;
             margin: 0;
-            line-height: 1;
-            text-shadow: 3px 3px 0px #fff, 5px 5px 8px rgba(0,0,0,0.4);
-            letter-spacing: 2px;
+            line-height: 0.9;
+            text-shadow: 2px 2px 0px #fff, 4px 4px 6px rgba(0,0,0,0.4);
+            letter-spacing: 1px;
             text-align: center;
             width: 100%;
+        }
+
+        /* Ligne de séparation */
+        .divider-line {
+            width: 80%;
+            height: 3px;
+            background-color: #111;
+            margin: 2% 0;
         }
 
         /* Sous-titre BAN OR SPAM */
         .title-sub {
             font-family: 'Alfa Slab One', cursive;
             font-size: 3.5vw;
-            max-font-size: 1.5rem;
+            max-font-size: 1.3rem;
             color: #8a0b0b;
-            margin: 2% 0;
+            margin: 1% 0;
             letter-spacing: 2px;
-            border-top: 2px solid #111;
-            border-bottom: 2px solid #111;
-            padding: 2% 5%;
-            width: 85%;
             text-align: center;
         }
 
-        /* CADRE DE L'IMAGE - C'est ici que le problème est réglé */
+        /* CADRE DE L'IMAGE (Parfaitement proportionné) */
         .photo-frame {
-            width: 90%;
-            flex-grow: 1; /* Prend tout l'espace disponible entre le haut et le bas */
-            max-height: 40%; /* Limite la hauteur pour laisser la place au texte */
-            background-color: #050505;
+            width: 85%;
+            height: 35%; /* Prend 35% de la hauteur totale */
+            background-color: #000;
             border: 4px solid #111;
-            margin-bottom: 3%;
-            box-shadow: inset 0 0 30px #000, 0 5px 15px rgba(0,0,0,0.5);
+            margin: 3% 0;
+            box-shadow: inset 0 0 20px #000, 0 5px 15px rgba(0,0,0,0.4);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -262,18 +227,17 @@
         }
 
         .photo-placeholder {
-            color: #444;
+            color: #555;
             font-size: 1rem;
             text-align: center;
-            padding: 20px;
             font-family: 'Special Elite', serif;
         }
 
         /* Nom */
         .poster-name {
             font-family: 'Alfa Slab One', cursive;
-            font-size: 5vw;
-            max-font-size: 2.2rem;
+            font-size: 4.5vw;
+            max-font-size: 1.8rem;
             color: #111;
             text-transform: uppercase;
             text-align: center;
@@ -287,80 +251,68 @@
         .poster-prime {
             font-family: 'Alfa Slab One', cursive;
             font-size: 6vw;
-            max-font-size: 2.5rem;
+            max-font-size: 2.2rem;
             color: #8a0b0b;
-            margin: 1% 0 3% 0;
+            margin: 2% 0;
             text-shadow: 1px 1px 0px rgba(255,255,255,0.5);
         }
 
-        /* Footer OMP */
+        /* Footer (Texte modifié selon ta demande) */
         .omp-footer {
             text-align: center;
             width: 100%;
             margin-top: auto;
-            border-top: 2px solid #111;
-            padding-top: 2%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .omp-title {
             font-family: 'Alfa Slab One', cursive;
             font-size: 3vw;
-            max-font-size: 1.2rem;
+            max-font-size: 1.1rem;
             color: #111;
-            margin-bottom: 1%;
-            line-height: 1.1;
+            margin-bottom: 2%;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            line-height: 1.2;
         }
 
         .omp-text {
             font-family: 'Special Elite', serif;
-            font-size: 2vw;
-            max-font-size: 0.8rem;
-            color: #222;
+            font-size: 2.2vw;
+            max-font-size: 0.75rem;
+            color: #333;
             line-height: 1.2;
             margin: 0;
-        }
-
-        .omp-warning {
-            font-family: 'Alfa Slab One', cursive;
-            font-size: 2.5vw;
-            max-font-size: 1rem;
-            color: #8a0b0b;
-            margin-top: 2%;
-            text-transform: uppercase;
+            text-align: center;
         }
 
         /* Bouton Télécharger */
         #download-btn {
             display: none;
-            padding: 18px 40px;
+            padding: 15px 30px;
             background: transparent;
             color: #d4af37;
             border: 2px solid #d4af37;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             cursor: pointer;
-            border-radius: 4px;
-            font-weight: bold;
-            text-transform: uppercase;
-            transition: all 0.3s;
             font-family: 'Special Elite', serif;
-            margin-bottom: 50px;
+            text-transform: uppercase;
             letter-spacing: 2px;
+            margin-bottom: 40px;
+            transition: 0.3s;
         }
-        #download-btn:hover {
-            background: #d4af37;
-            color: #000;
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
-        }
+        #download-btn:hover { background: #d4af37; color: #000; }
 
-        /* Responsive pour mobile : on ajuste les tailles */
-        @media (max-width: 600px) {
-            .title-wanted { font-size: 15vw; }
+        /* Ajustements pour les petits écrans */
+        @media (max-width: 500px) {
+            .title-wanted { font-size: 14vw; }
             .title-sub { font-size: 4vw; }
             .poster-name { font-size: 6vw; }
             .poster-prime { font-size: 7vw; }
             .omp-title { font-size: 3.5vw; }
             .omp-text { font-size: 2.5vw; }
-            .omp-warning { font-size: 3vw; }
         }
     </style>
 </head>
@@ -372,7 +324,7 @@
         <div class="click-hint">[ Cliquez pour entrer ]</div>
     </div>
 
-    <!-- L'APPLICATION -->
+    <!-- APPLICATION -->
     <div id="app-container">
         
         <!-- Formulaire -->
@@ -381,54 +333,55 @@
             
             <div class="form-group">
                 <label>Nom du criminel :</label>
-                <input type="text" id="input-name" placeholder="MUICHIRO ALASTOR ZR" value="MUICHIRO ALASTOR ZR">
+                <input type="text" id="input-name" value="MUICHIRO ALASTOR ZR">
             </div>
 
             <div class="form-group">
-                <label>Photo (Portrait) :</label>
+                <label>Photo du criminel :</label>
                 <div class="file-upload-wrapper">
-                    <div class="file-upload-btn" id="file-label">📸 Sélectionner une image</div>
+                    <div class="file-upload-btn" id="file-label">📸 Choisir une photo</div>
                     <input type="file" id="input-photo" accept="image/*">
                 </div>
             </div>
 
             <div class="form-group">
                 <label>Montant de la prime :</label>
-                <input type="number" id="input-prime" placeholder="1500" value="1500">
+                <input type="number" id="input-prime" value="1500">
             </div>
 
-            <button id="generate-btn">Générer l'Affiche</button>
+            <button id="generate-btn">Mettre à jour l'affiche</button>
         </div>
 
-        <!-- L'AFFICHE GENERÉE -->
+        <!-- L'AFFICHE -->
         <div id="poster-container">
             <div class="title-wanted">WANTED</div>
-            <div class="title-sub">BAN OR SPAM</div>
             
-            <!-- Le cadre de l'image -->
+            <div class="divider-line"></div>
+            <div class="title-sub">BAN OR SPAM</div>
+            <div class="divider-line"></div>
+            
             <div class="photo-frame">
                 <img id="poster-photo" src="" alt="Photo">
-                <div class="photo-placeholder" id="photo-placeholder">[ Aucune image ]<br>Ajoutez une photo</div>
+                <div class="photo-placeholder" id="photo-placeholder">[ PHOTO ]</div>
             </div>
             
             <div class="poster-name" id="poster-name">MUICHIRO ALASTOR ZR</div>
             <div class="poster-prime">PRIME : <span id="poster-prime-val">1 500</span></div>
             
             <div class="omp-footer">
-                <div class="omp-title">O.M.P - ORDRE MONDIAL DE LA PURGE</div>
+                <div class="omp-title">ORDRE MONDIAL DE LA PURGE</div>
                 <p class="omp-text">
-                    Cette prime a été attribuée par l'O.M.P.<br>
+                    Cette prime a été attribuée par l'Ordre Mondial.<br>
                     Toute modification ou falsification de cette dernière<br>
                     sera sévèrement punie.
                 </p>
-                <div class="omp-warning">LA PURGE NE PARDONNE PAS.</div>
             </div>
         </div>
 
-        <button id="download-btn">📥 Télécharger l'Affiche</button>
+        <button id="download-btn">📥 Télécharger l'image</button>
     </div>
 
-    <!-- LA MUSIQUE (Change le lien par ta propre musique si tu veux) -->
+    <!-- MUSIQUE -->
     <audio id="bg-music" loop>
         <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" type="audio/mpeg">
     </audio>
@@ -440,16 +393,14 @@
         const music = document.getElementById('bg-music');
 
         welcomeScreen.addEventListener('click', () => {
-            music.volume = 0.4;
-            music.play().catch(e => console.log("Audio bloqué par le navigateur"));
-            
+            music.volume = 0.3;
+            music.play().catch(e => console.log("Audio bloqué"));
             welcomeScreen.style.opacity = '0';
-            welcomeScreen.style.visibility = 'hidden';
-            
-            appContainer.style.display = 'flex';
             setTimeout(() => {
-                appContainer.style.opacity = '1';
-            }, 100);
+                welcomeScreen.style.display = 'none';
+                appContainer.style.display = 'flex';
+                setTimeout(() => appContainer.style.opacity = '1', 50);
+            }, 800);
         });
 
         // 2. UPLOAD D'IMAGE
@@ -462,8 +413,8 @@
             const file = e.target.files[0];
             if (file) {
                 fileLabel.textContent = "✅ Image chargée";
-                fileLabel.style.color = "#d4af37";
-                fileLabel.style.borderColor = "#d4af37";
+                fileLabel.style.borderColor = "#4caf50";
+                fileLabel.style.color = "#4caf50";
 
                 const reader = new FileReader();
                 reader.onload = function(event) {
@@ -475,7 +426,7 @@
             }
         });
 
-        // 3. GENERATION DU TEXTE
+        // 3. MISE A JOUR DU TEXTE
         const genBtn = document.getElementById('generate-btn');
         const posterName = document.getElementById('poster-name');
         const posterPrimeVal = document.getElementById('poster-prime-val');
@@ -484,42 +435,36 @@
             const nameValue = document.getElementById('input-name').value;
             const primeValue = document.getElementById('input-prime').value;
 
-            posterName.textContent = nameValue || "NOM INCONNU";
+            posterName.textContent = nameValue || "INCONNU";
             posterPrimeVal.textContent = Number(primeValue).toLocaleString('fr-FR') || "0";
             
-            // Effet visuel de validation
+            // Effet visuel
             const poster = document.getElementById('poster-container');
-            poster.style.transform = "scale(0.98)";
+            poster.style.transform = "scale(0.97)";
             setTimeout(() => poster.style.transform = "scale(1)", 150);
         });
 
-        // 4. TELECHARGEMENT FIXÉ (On utilise scale: 2 pour la qualité)
+        // 4. TELECHARGEMENT
         const downloadBtn = document.getElementById('download-btn');
         downloadBtn.style.display = 'block';
 
         downloadBtn.addEventListener('click', () => {
-            // On cache le bouton temporairement pendant la capture
-            downloadBtn.style.display = 'none';
+            downloadBtn.style.display = 'none'; // Cache le bouton
             
-            const posterElement = document.getElementById('poster-container');
-            
-            html2canvas(posterElement, {
-                scale: 2, // Haute résolution
+            html2canvas(document.getElementById('poster-container'), {
+                scale: 2, // Haute qualité
                 useCORS: true,
-                backgroundColor: null, // Fond transparent autour
-                logging: false
+                backgroundColor: null
             }).then(canvas => {
                 const link = document.createElement('a');
-                link.download = 'OMP_Prime.png';
+                link.download = 'Affiche_Prime.png';
                 link.href = canvas.toDataURL('image/png');
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
-                
                 downloadBtn.style.display = 'block';
             }).catch(err => {
-                console.error("Erreur téléchargement:", err);
-                alert("Erreur lors de la création de l'image. Essayez sur un ordinateur si le problème persiste.");
+                alert("Erreur de téléchargement. Fais une capture d'écran de l'affiche à la place !");
                 downloadBtn.style.display = 'block';
             });
         });
