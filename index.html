@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O.M.P - Ordre Mondial de la Purge</title>
+    <style>
+        /* --- STYLE GLOBAL --- */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            font-family: 'Times New Roman', serif;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        /* --- L'ACCUEIL (ÉCRAN DE DÉMARRAGE) --- */
+        #welcome-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, #2a0000 0%, #000000 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            cursor: pointer;
+            transition: opacity 1s ease;
+        }
+
+        #welcome-screen h1 {
+            font-size: 8rem;
+            color: #b30000;
+            text-shadow: 0 0 20px #ff0000, 0 0 40px #ff0000;
+            letter-spacing: 20px;
+            margin: 0;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.8; }
+        }
+
+        .click-hint {
+            position: absolute;
+            bottom: 50px;
+            font-size: 1.2rem;
+            color: #888;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* --- LE GENERATEUR D'AFFICHE --- */
+        #app-container {
+            display: none; /* Caché jusqu'au clic */
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .form-group {
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #d4af37; /* Couleur or */
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            background-color: #222;
+            border: 2px solid #555;
+            color: #fff;
+            font-size: 1rem;
+            border-radius: 5px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #b30000;
+        }
+
+        /* --- L'AFFICHE (LE RENDU) --- */
+        #poster {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            aspect-ratio: 2 / 3;
+            background-image: url('https://i.imgur.com/your-paper-background.jpg'); /* REMPLACE PAR TON IMAGE DE FOND */
+            background-color: #e6d5b8; /* Fallback couleur papier */
+            background-size: cover;
+            border: 10px solid #3e2723;
+            box-shadow: 0 0 30px rgba(0,0,0,0.8);
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #000;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* Titre WANTED */
+        .poster-title {
+            font-family: 'Impact', sans-serif;
+            font-size: 4rem;
+            color: #1a1a1a;
+            margin: 10px 0;
+            letter-spacing: 5px;
+            text-shadow: 2px 2px 0px #fff;
+        }
+
+        .poster-subtitle {
+            font-size: 1.5rem;
+            color: #5a0000;
+            font-weight: bold;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+        }
+
+        /* La photo */
+        #poster-photo {
+            width: 80%;
+            height: 300px;
+            object-fit: cover;
+            border: 5px solid #1a1a1a;
+            background-color: #333;
+            margin-bottom: 15px;
+        }
+
+        /* Le nom */
+        #poster-name {
+            font-family: 'Georgia', serif;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #1a1a1a;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        /* La prime */
+        .prime-section {
+            font-size: 1.8rem;
+            color: #5a0000;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        /* Le texte OMP */
+        .omp-footer {
+            text-align: center;
+            font-size: 1rem;
+            color: #1a1a1a;
+            border-top: 2px solid #1a1a1a;
+            padding-top: 10px;
+            width: 90%;
+            margin-top: auto;
+        }
+        
+        .omp-footer strong {
+            font-size: 1.2rem;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        /* Bouton de téléchargement */
+        #download-btn {
+            display: none;
+            margin-top: 20px;
+            padding: 15px 30px;
+            background-color: #b30000;
+            color: #fff;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: background 0.3s;
+        }
+
+        #download-btn:hover {
+            background-color: #ff0000;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ÉCRAN D'ACCUEIL (MUSIQUE + OMP) -->
+    <div id="welcome-screen">
+        <h1>OMP</h1>
+        <div class="click-hint">Cliquez pour entrer</div>
+    </div>
+
+    <!-- L'APPLICATION -->
+    <div id="app-container">
+        <h2 style="color: #d4af37; text-align: center; letter-spacing: 2px;">GÉNÉRATEUR D'AVIS DE RECHERCHE</h2>
+        
+        <div class="form-group">
+            <label>Nom du criminel :</label>
+            <input type="text" id="input-name" placeholder="Ex: MUICHIRO ALASTOR ZR" value="MUICHIRO ALASTOR ZR">
+        </div>
+
+        <div class="form-group">
+            <label>Lien de la photo (URL) :</label>
+            <input type="url" id="input-photo" placeholder="https://exemple.com/image.jpg" value="https://i.pinimg.com/736x/8a/0e/3f/8a0e3f6b1a2c3d4e5f6g7h8i9j0k1l2.jpg">
+            <small style="color: #888;">(Pour le moment, collez un lien d'image. Plus tard, on pourra ajouter l'upload direct)</small>
+        </div>
+
+        <div class="form-group">
+            <label>Montant de la prime (en Berry) :</label>
+            <input type="number" id="input-prime" placeholder="Ex: 1500" value="1500">
+        </div>
+
+        <button id="generate-btn" style="padding: 15px 30px; background-color: #d4af37; color: #000; border: none; font-size: 1.2rem; cursor: pointer; font-weight: bold; border-radius: 5px; margin-top: 10px;">GÉNÉRER L'AFFICHE</button>
+
+        <!-- L'AFFICHE GENERÉE -->
+        <div id="poster">
+            <div class="poster-title">WANTED</div>
+            <div class="poster-subtitle">BAN OR SPAM</div>
+            
+            <img id="poster-photo" src="" alt="Photo">
+            
+            <div id="poster-name">NOM DU CRIMINEL</div>
+            
+            <div class="prime-section">PRIME : <span id="poster-prime">0</span></div>
+            
+            <div class="omp-footer">
+                <strong>O.M.P - ORDRE MONDIAL DE LA PURGE</strong>
+                Cette prime a été attribuée par l'O.M.P.<br>
+                Toute modification ou falsification de cette dernière<br>
+                sera sévèrement punie.<br>
+                <strong style="margin-top: 10px;">LA PURGE NE PARDONNE PAS.</strong>
+            </div>
+        </div>
+
+        <button id="download-btn">Télécharger l'affiche</button>
+    </div>
+
+    <!-- LA MUSIQUE (Remplace par un vrai lien mp3) -->
+    <audio id="bg-music" loop>
+        <!-- J'ai mis un lien d'exemple, tu devras héberger ton propre son -->
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+        Ton navigateur ne supporte pas l'audio.
+    </audio>
+
+    <!-- SCRIPT POUR FAIRE FONCTIONNER LE TOUT -->
+    <script>
+        // 1. GESTION DE L'ACCUEIL ET DE LA MUSIQUE
+        const welcomeScreen = document.getElementById('welcome-screen');
+        const appContainer = document.getElementById('app-container');
+        const music = document.getElementById('bg-music');
+
+        welcomeScreen.addEventListener('click', () => {
+            // Lance la musique (les navigateurs exigent une interaction utilisateur)
+            music.volume = 0.4; // Volume à 40%
+            music.play().catch(e => console.log("Erreur audio: ", e));
+            
+            // Cache l'écran d'accueil
+            welcomeScreen.style.opacity = '0';
+            setTimeout(() => {
+                welcomeScreen.style.display = 'none';
+                appContainer.style.display = 'flex';
+            }, 1000);
+        });
+
+        // 2. GESTION DU GÉNÉRATEUR
+        const genBtn = document.getElementById('generate-btn');
+        const posterName = document.getElementById('poster-name');
+        const posterPhoto = document.getElementById('poster-photo');
+        const posterPrime = document.getElementById('poster-prime');
+
+        genBtn.addEventListener('click', () => {
+            const nameValue = document.getElementById('input-name').value;
+            const photoValue = document.getElementById('input-photo').value;
+            const primeValue = document.getElementById('input-prime').value;
+
+            // Mise à jour de l'affiche
+            posterName.textContent = nameValue || "NOM INCONNU";
+            posterPhoto.src = photoValue;
+            // Formate le nombre avec des espaces (ex: 1 500)
+            posterPrime.textContent = Number(primeValue).toLocaleString('fr-FR') || "0";
+        });
+
+        // 3. BOUTON DE TELECHARGEMENT (Nécessite html2canvas pour marcher parfaitement)
+        // Pour l'instant, ce bouton n'est pas fonctionnel sans la librairie externe.
+        // Si tu veux le téléchargement, ajoute ça dans le <head>:
+        // <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+        
+        const downloadBtn = document.getElementById('download-btn');
+        downloadBtn.style.display = 'block'; // Affiche le bouton
+
+        downloadBtn.addEventListener('click', () => {
+            // Code basique pour télécharger (nécessite html2canvas)
+            if (typeof html2canvas !== 'undefined') {
+                html2canvas(document.getElementById('poster')).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = 'avis_de_recherche.png';
+                    link.href = canvas.toDataURL();
+                    link.click();
+                });
+            } else {
+                alert("La fonction de téléchargement nécessite la librairie html2canvas. (L'image reste visible à l'écran).");
+            }
+        });
+    </script>
+</body>
+</html>
